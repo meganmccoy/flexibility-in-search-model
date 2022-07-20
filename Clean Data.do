@@ -34,9 +34,9 @@ format cps8_date %td
 
 keep if age>24 & age<55 // removes 10,119
 
-tab sex
-tab sex, nol
-keep if sex==1 // removes 5,213
+// tab sex
+// tab sex, nol
+// keep if sex==1 // removes 5,213
 
 tab race
 tab race, nol
