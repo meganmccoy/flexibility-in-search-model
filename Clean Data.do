@@ -78,6 +78,7 @@ tab wrkflexfreq, nol
 // 		0 if not flexible, 1 if informal policy, 2 if formal policy 
 gen flex_sched_score = (wrkflexhrs==1)+(wrkflexpol==1)
 label var flex_sched_score "Score of Flexible Schedule: 0 if not, 1 if informal, 2 if formal policy"
+recode flex_sched_score 0=. if employed==0
 
 tab flex_sched_score wrkflexfreq //no relationship between formality and use, supporting argument to separate access and utilization
 
