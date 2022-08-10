@@ -63,7 +63,7 @@ drop if employed==1 & earnweek==0 // removed 1
 
 	* After homogeneity measures, sample of 1270 (1243 employed and 27 unemployed)
 	
-* Flexibility Measure
+* Flexibility Measures
 
 tab wrkflexhrs //has a flexible schedule where able to change work start or end time
 tab wrkflexhrs, nol
@@ -74,6 +74,10 @@ tab wrkflexpol, nol
 tab wrkflexfreq //frequency of ability to change work start or end time
 tab wrkflexfreq, nol
 
+gen flexsched = (wrkflexhrs==1)
+label var flexsched "1 if able to change work schedule"
+recode flexsched 0=. if employed==0
+
 // flexibility score = 1(flexible schedule) + 1(formal policy) 
 // 		0 if not flexible, 1 if informal policy, 2 if formal policy 
 gen flex_sched_score = (wrkflexhrs==1)+(wrkflexpol==1)
@@ -81,6 +85,17 @@ label var flex_sched_score "Score of Flexible Schedule: 0 if not, 1 if informal,
 recode flex_sched_score 0=. if employed==0
 
 tab flex_sched_score wrkflexfreq //no relationship between formality and use, supporting argument to separate access and utilization
+
+gen flexloc = (wrkhomeable==1)&(wrkhomepd==1 | wrkhomepd==3)
+label var flexloc "1 if able to and paid for WFH"
+recode flexloc 0=. if employed==0
+
+// flexibility score = 1(flexible location) + 1(paid for some or all) 
+// 		0 if not flexible, 1 if unpaid, 2 if paid
+gen flex_loc_score = (wrkhomeable==1)+(wrkhomepd==1 | wrkhomepd==3)
+label var flex_loc_score "Score of Flexible Location: 0 if not, 1 if able but unpaid, 2 if able and paid"
+recode flex_loc_score 0=. if employed==0
+
 
 * Wages
 sum earnweek if employed==1 //some topcoding but no missing
