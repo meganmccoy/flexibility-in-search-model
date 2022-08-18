@@ -1,6 +1,8 @@
 cd "/Users/megan.mccoy/Desktop/UNC/Flexibility in Field Paper/flexibility-in-field-paper/"
 
-* Format CPS data before merge to get unemployment duration :(
+***********************************************************************
+*		CPS Data for Unemployment Duration
+***********************************************************************
 use cps_00023.dta, clear
 keep if mish==8
 
@@ -14,12 +16,36 @@ format cpsidp %18.0f
 
 save cps_workfile, replace
 
+***********************************************************************
+*		CPI Data
+***********************************************************************
+
+import delimited using CPIAUCSL_FRED_17-18_annual_avg.csv, clear  
+
+gen year = 2017 if date=="2017-01-01"
+recode year .=2018
+destring year, replace
+drop date
+
+gen cpibase2018 = cpiaucsl/251.0989
+
+save cpi, replace
+
+
+***********************************************************************
+*		ATUS Leave Module Data
+***********************************************************************
+
 * Merge CPS and ATUS 
 use atus_00013.dta, clear // 19,816 total responses 
 format cpsidp %18.0f
 
 merge 1:1 cpsidp year_cps8 month_cps8 using cps_workfile
 keep if _m==3 // perfect merge! 
+drop _m
+
+* Merge ATUS and CPI
+merge m:1 year using cpi
 
 * Necessary variables 
 gen atus_date = mdy(month, 1, year)
@@ -32,7 +58,7 @@ format cps8_date %td
 * Homogeneity measures
 	* age 25-55, men, white, college degree or more, unemployed OR employed FT Leave Module respondent 
 
-keep if age>24 & age<55 // removes 10,119
+keep if age>24 & age<56 // removes 10,119
 
 // tab sex
 // tab sex, nol
@@ -86,8 +112,8 @@ recode flex_sched_score 0=. if employed==0
 
 tab flex_sched_score wrkflexfreq //no relationship between formality and use, supporting argument to separate access and utilization
 
-gen flexloc = (wrkhomeable==1)&(wrkhomepd==1 | wrkhomepd==3)
-label var flexloc "1 if able to and paid for WFH"
+gen flexloc = (wrkhomeable==1) //&(wrkhomepd==1 | wrkhomepd==3) // ISSUE! Paid question requires a yes to "do you ever work from home?"
+label var flexloc "1 if able to WFH" // and paid for
 recode flexloc 0=. if employed==0
 
 // flexibility score = 1(flexible location) + 1(paid for some or all) 
@@ -103,6 +129,9 @@ sum hourwage if employed==1 //missing
 
 gen hrwage = earnweek/40 if employed==1
 label var hrwage "Estimated hourly wage (earnweek/40)"
+
+gen hrwage_r = hrwage/cpibase2018
+label var hrwage_r "Estimated hourly wage (earnweek/40), 2018 dollars"
 
 * Unemployment duration 
 recode durunemp 999=.
