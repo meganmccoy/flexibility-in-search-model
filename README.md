@@ -1,4 +1,4 @@
-# flexibility-in-field-paper
+# flexibility-in-search-model
 
 Estimating a search model with workplace flexibility 
 
