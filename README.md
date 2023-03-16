@@ -1,8 +1,6 @@
-# flexibility-in-field-paper
+# flexibility-in-search-model
 
-Estimating a search model with workplace flexibility 
-
-(Started as modifying Field Paper model to study workplace flexibility)
+Estimating a search model with workplace flexibility, i.e. the ability to change one's work schedule or the ability to change one's work location (work from home)
 
 ## Model Set-up
 - Search model in stationary, continuous time.
