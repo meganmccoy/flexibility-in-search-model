@@ -56,7 +56,8 @@ label var cps8_date "Month, Year of ATUS interview"
 format cps8_date %td
 
 * Homogeneity measures
-	* age 25-55, men, white, college degree or more, unemployed OR employed FT Leave Module respondent 
+	* age 25-55, men, white, college degree or more, unemployed OR employed FT Leave Module respondent
+	* create new edu (1 if HS diploma, 2 if college or more)
 
 keep if age>24 & age<56 // removes 10,119
 
@@ -70,7 +71,15 @@ keep if race==100 // removes 879
 
 tab educ
 tab educ, nol
-keep if educ >= 40 // removes 1,998
+// keep if educ >= 40 // removes 1,998
+
+gen hs_edu=(educ==20 | educ==21 | educ==30) // highest edu: HS graduate - GED or diploma or some college (no degree)
+tab educ hs_edu, mis
+label var hs_edu "High School Diploma or equivalent"
+
+gen col_edu=(educ>=40)
+tab educ col_edu, mis
+label var col_edu "Bachelors degree or more"
 
 tab empstat
 tab empstat, nol
